@@ -22,6 +22,7 @@ import matplotlib.pyplot as plt
 from matplotlib.pyplot import imshow
 import math
 import h5py
+import sys
 
 import mlflow
 import mlflow.keras
@@ -94,62 +95,60 @@ def HappyModel(input_shape):
     
     # Create model. This creates your Keras model instance, you'll use this instance to train/test the model.
     model = Model(inputs=X_input, outputs = X, name="HappyModel")
-	
-	# compile the model
-	model.compile(optimizer="adam", loss="binary_crossentropy", metrics=["accuracy"])
+    
+    # compile the model
+    model.compile(optimizer="adam", loss="binary_crossentropy", metrics=["accuracy"])
     
     return model
 
 if __name__ == "__main__":
-	# In[4]:
+    # In[4]:
 
-	X_train_orig, Y_train_orig, X_test_orig, Y_test_orig, classes = load_dataset()
+    X_train_orig, Y_train_orig, X_test_orig, Y_test_orig, classes = load_dataset()
 
-	#Normalize image vectors
-	X_train = X_train_orig/255
-	X_test = X_test_orig/255
-	
-	# Reshape
-	Y_train = Y_train_orig.T
-	Y_test = Y_test_orig.T
-	
-	print("number of training examples: ", X_train.shape[0])
-	print("number of test examples: ", X_test.shape[0])
-	print("X_train shape: ", X_train.shape)
-	print("X_test shape: ", X_test.shape)
-	print("Y_train shape: ", Y_train.shape)
-	print("Y_test shape: ", Y_test.shape)
-	
-	with mlflow.start_run() as run:
-	
-		batch_size = int(sys.argv[1]) if len(sys.argv) > 1 else 16
-		epochs = int(sys.argv[2]) if len(sys.argv) > 2 else 40
+    #Normalize image vectors
+    X_train = X_train_orig/255
+    X_test = X_test_orig/255
+    
+    # Reshape
+    Y_train = Y_train_orig.T
+    Y_test = Y_test_orig.T
+    
+    print("number of training examples: ", X_train.shape[0])
+    print("number of test examples: ", X_test.shape[0])
+    print("X_train shape: ", X_train.shape)
+    print("X_test shape: ", X_test.shape)
+    print("Y_train shape: ", Y_train.shape)
+    print("Y_test shape: ", Y_test.shape)
+
+    with mlflow.start_run() as run:
+    
+        batch_size = int(sys.argv[1]) if len(sys.argv) > 1 else 16
+        epochs = int(sys.argv[2]) if len(sys.argv) > 2 else 40
    
-		# Create a model
-		happyModel = HappyModel(X_train.shape[1:])
-		
-		mlflow.keras.autolog()
-		
-		# Train the model
-		happyModel.fit(X_train, Y_train, epochs=epochs, batch_size=batch_size)
-		
-		run_id = run.info.run_uuid
+        # Create a model
+        happyModel = HappyModel(X_train.shape[1:])
+        
+        mlflow.keras.autolog()
+        
+        # Train the model
+        happyModel.fit(X_train, Y_train, epochs=epochs, batch_size=batch_size)
+        
+        run_id = run.info.run_uuid
         exp_id = run.info.experiment_id
-		
-		# Evaluate Performance
-		preds = happyModel.evaluate(X_test, Y_test)
-		
-		print("Loss = ", preds[0])
-		print("Test Accuracy = ", preds[1])
-		
-		mlflow.log_param("epochs = " , epochs)
-		mlflow.log_param("batch_size = " , batch_size)
-		mlflow.log_metric("Loss = " , preds[0])
-		mlflow.log_metric("Test Accuracy = " , preds[1])
-	
-		mlflow.keras.log_model(happyModel, "model")
-	
-	
-
-
-
+        
+        # Evaluate Performance
+        preds = happyModel.evaluate(X_test, Y_test)
+        
+        print("Loss = ", preds[0])
+        print("Test Accuracy = ", preds[1])
+        
+        print("Run id = " , run_id)
+        print("Experiment id = ", exp_id)
+        
+        mlflow.log_param("epochs" , epochs)
+        mlflow.log_param("batch_size" , batch_size)
+        mlflow.log_metric("Loss" , preds[0])
+        mlflow.log_metric("Accuracy" , preds[1])
+        
+        mlflow.keras.log_model(happyModel, "model")
