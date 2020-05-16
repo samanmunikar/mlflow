@@ -1,0 +1,15 @@
+artifact_uri: file:///D:/Downloads/mlflow/Keras%20Tutorial/mlruns/0/426d514b6681408d9fbbd7748a27922c/artifacts
+end_time: 1589597259321
+entry_point_name: ''
+experiment_id: '0'
+lifecycle_stage: active
+name: ''
+run_id: 426d514b6681408d9fbbd7748a27922c
+run_uuid: 426d514b6681408d9fbbd7748a27922c
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1589596943037
+status: 3
+tags: []
+user_id: i11044
